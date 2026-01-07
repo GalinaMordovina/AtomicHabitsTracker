@@ -1,6 +1,7 @@
 from pathlib import Path
 from dotenv import load_dotenv
 import os
+from datetime import timedelta
 
 # Загружаем переменные окружения из файла .env
 load_dotenv()  # чтобы перезаписывать можно добавить (override=True)
@@ -28,6 +29,10 @@ INSTALLED_APPS = [
 
     # сторонние
     'rest_framework',
+    'rest_framework_simplejwt',
+
+    # наши приложения
+    'users',
 
 ]
 
@@ -107,9 +112,19 @@ USE_L10N = True
 # Статические и медиа-файлы
 STATIC_URL = 'static/'
 
-# DRF: базовые настройки API.
+# DRF: базовые настройки API
 REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
     'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.AllowAny',
+        'rest_framework.permissions.IsAuthenticated',
     ],
+}
+
+
+# SimpleJWT: настройки времени жизни токенов
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=15),  # короткий (для запросов)
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),     # длинный (для обновления Access)
 }
