@@ -19,3 +19,10 @@ class RegisterSerializer(serializers.ModelSerializer):
         user.set_password(validated_data["password"])
         user.save()
         return user
+
+
+class TelegramChatIdSerializer(serializers.Serializer):
+    """
+    Сериализатор для сохранения telegram_chat_id в профиле пользователя.
+    """
+    telegram_chat_id = serializers.CharField(max_length=64)

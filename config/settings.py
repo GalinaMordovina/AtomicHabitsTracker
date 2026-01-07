@@ -34,6 +34,7 @@ INSTALLED_APPS = [
     # наши приложения
     'users',
     'habits',
+    'notifications',
 
 ]
 
