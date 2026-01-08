@@ -4,6 +4,7 @@ __pycache__/
 *$py.class
 
 # Caches and logs
+logs/
 *.log
 *.pot
 *.pyc
