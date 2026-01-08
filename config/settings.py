@@ -110,9 +110,9 @@ AUTH_PASSWORD_VALIDATORS = [
 
 
 # Локализация
-LANGUAGE_CODE = 'ru'        # язык интерфейса
+LANGUAGE_CODE = 'ru'         # язык интерфейса
 
-TIME_ZONE = 'Europe/Moscow' # часовой пояс
+TIME_ZONE = 'Europe/Moscow'  # часовой пояс
 
 USE_I18N = True
 
