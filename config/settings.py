@@ -20,6 +20,8 @@ DEBUG = True if os.getenv('DEBUG') == "True" else False
 # Список разрешённых хостов
 ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '').split(',') if os.getenv('ALLOWED_HOSTS') else []
 
+# CORS (для учебного проекта)
+CORS_ALLOW_ALL_ORIGINS = True
 
 # Установленные приложения
 INSTALLED_APPS = [
@@ -36,6 +38,7 @@ INSTALLED_APPS = [
     'django_celery_beat',
     'drf_spectacular',
     'drf_spectacular_sidecar',
+    'corsheaders',
 
     # наши приложения
     'users',
@@ -47,6 +50,7 @@ INSTALLED_APPS = [
 # Middleware (промежуточные слои)
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
