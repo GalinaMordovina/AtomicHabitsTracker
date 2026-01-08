@@ -2,12 +2,15 @@ from pathlib import Path
 from dotenv import load_dotenv
 import os
 from datetime import timedelta
+from config.logging_config import build_logging_config
 
 # Загружаем переменные окружения из файла .env
 load_dotenv()  # чтобы перезаписывать можно добавить (override=True)
 
 # Базовая директория проекта
 BASE_DIR = Path(__file__).resolve().parent.parent
+# Логирование
+LOGGING = build_logging_config(BASE_DIR)
 
 SECRET_KEY = os.getenv('SECRET_KEY')
 
@@ -30,6 +33,7 @@ INSTALLED_APPS = [
     # сторонние
     'rest_framework',
     'rest_framework_simplejwt',
+    'django_celery_beat',
 
     # наши приложения
     'users',
@@ -130,3 +134,29 @@ SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=15),  # короткий (для запросов)
     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),     # длинный (для обновления Access)
 }
+
+# Настройки для Celery
+REDIS_HOST = os.getenv("REDIS_HOST", "127.0.0.1")
+REDIS_PORT = os.getenv("REDIS_PORT", "6379")
+REDIS_DB = os.getenv("REDIS_DB", "0")
+
+# URL-адрес брокера сообщений
+CELERY_BROKER_URL = f"redis://{REDIS_HOST}:{REDIS_PORT}/{REDIS_DB}"
+
+# URL-адрес брокера результатов, также Redis
+CELERY_RESULT_BACKEND = CELERY_BROKER_URL
+
+# Часовой пояс для работы Celery
+CELERY_TIMEZONE = TIME_ZONE
+
+# Флаг отслеживания выполнения задач
+CELERY_TASK_TRACK_STARTED = True
+
+# Максимальное время на выполнение задачи
+CELERY_TASK_TIME_LIMIT = 30 * 60
+
+CELERY_ACCEPT_CONTENT = ["json"]
+CELERY_TASK_SERIALIZER = "json"
+CELERY_RESULT_SERIALIZER = "json"
+
+CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers:DatabaseScheduler"
