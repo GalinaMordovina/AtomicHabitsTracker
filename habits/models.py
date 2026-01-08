@@ -93,7 +93,6 @@ class Habit(models.Model):
         verbose_name="Последняя отправка напоминания"
     )
 
-
     class Meta:
         verbose_name = "Привычка"
         verbose_name_plural = "Привычки"
