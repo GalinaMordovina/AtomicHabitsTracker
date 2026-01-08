@@ -8,7 +8,7 @@ User = get_user_model()
 
 
 @receiver(post_save, sender=User)
-def create_profile(_sender, instance, created, **_kwargs):
+def create_profile(sender, instance, created, **kwargs):  # noqa: F841
     """
        Автоматически создаёт профиль пользователя при его создании.
     """
