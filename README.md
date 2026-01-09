@@ -36,9 +36,12 @@ Backend:
 - Swagger / OpenAPI
 
 Тестирование и качество кода:
+
+Запуск тестирования: `pytest --cov`
+
 - pytest
 - pytest-django
-- coverage (покрытие ~99%)
+- coverage (покрытие > 80%)
 - flake8 (0 ошибок, миграции исключены)
 
 ## Запуск проекта:
