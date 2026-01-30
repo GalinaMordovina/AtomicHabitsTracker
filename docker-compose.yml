@@ -1,0 +1,57 @@
+services:
+  db:
+    image: postgres:16
+    env_file: .env
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    restart: always
+
+  redis:
+    image: redis:7
+    restart: always
+
+  web:
+    build: .
+    env_file: .env
+    depends_on:
+      - db
+      - redis
+    volumes:
+      - static_volume:/app/staticfiles
+      - media_volume:/app/media
+    restart: always
+
+  celery:
+    build: .
+    env_file: .env
+    command: celery -A config worker -l INFO
+    depends_on:
+      - db
+      - redis
+    restart: always
+
+  celery_beat:
+    build: .
+    env_file: .env
+    command: celery -A config beat -l INFO
+    depends_on:
+      - db
+      - redis
+    restart: always
+
+  nginx:
+    image: nginx:1.27
+    ports:
+      - "8080:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - static_volume:/static
+      - media_volume:/media
+    depends_on:
+      - web
+    restart: always
+
+volumes:
+  pg_data:
+  static_volume:
+  media_volume:
