@@ -5,6 +5,11 @@ services:
     volumes:
       - pg_data:/var/lib/postgresql/data
     restart: always
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB" ]
+      interval: 5s
+      timeout: 5s
+      retries: 10
 
   redis:
     image: redis:7
@@ -14,20 +19,25 @@ services:
     build: .
     env_file: .env
     depends_on:
-      - db
-      - redis
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_started
     volumes:
       - static_volume:/app/staticfiles
       - media_volume:/app/media
     restart: always
+    command: gunicorn config.wsgi:application --bind 0.0.0.0:8000
 
   celery:
     build: .
     env_file: .env
     command: celery -A config worker -l INFO
     depends_on:
-      - db
-      - redis
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_started
     restart: always
 
   celery_beat:
@@ -35,8 +45,10 @@ services:
     env_file: .env
     command: celery -A config beat -l INFO
     depends_on:
-      - db
-      - redis
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_started
     restart: always
 
   nginx:
