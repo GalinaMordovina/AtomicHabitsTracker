@@ -18,10 +18,17 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 DEBUG = True if os.getenv('DEBUG') == "True" else False
 
 # Список разрешённых хостов
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '').split(',') if os.getenv('ALLOWED_HOSTS') else []
+ALLOWED_HOSTS = [h.strip() for h in os.getenv("ALLOWED_HOSTS", "").split(",") if h.strip()]
 
-# CORS (для учебного проекта)
-CORS_ALLOW_ALL_ORIGINS = True
+# CORS
+CORS_ALLOW_ALL_ORIGINS = os.getenv("CORS_ALLOW_ALL_ORIGINS", "True") == "True"
+
+# без списка origins запросы с фронта не пройдут
+#CORS_ALLOWED_ORIGINS = (
+#    [o.strip() for o in os.getenv("CORS_ALLOWED_ORIGINS", "").split(",") if o.strip()]
+#    if not CORS_ALLOW_ALL_ORIGINS
+#    else []
+#)
 
 # Установленные приложения
 INSTALLED_APPS = [
@@ -82,13 +89,27 @@ TEMPLATES = [
 WSGI_APPLICATION = 'config.wsgi.application'
 
 
-# База данных
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+## База данных
+DB_ENGINE = os.getenv("DB_ENGINE", "sqlite")
+
+if DB_ENGINE == "postgres":
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.postgresql",
+            "NAME": os.getenv("POSTGRES_DB", "habits"),
+            "USER": os.getenv("POSTGRES_USER", "habits"),
+            "PASSWORD": os.getenv("POSTGRES_PASSWORD", "habits"),
+            "HOST": os.getenv("POSTGRES_HOST", "db"),
+            "PORT": os.getenv("POSTGRES_PORT", "5432"),
+        }
     }
-}
+else:
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": BASE_DIR / "db.sqlite3",
+        }
+    }
 
 
 # Валидация паролей
@@ -120,9 +141,15 @@ USE_TZ = True
 
 USE_L10N = True
 
+# Тип поля для первичных ключей (убирает предупреждения W042)
+DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # Статические и медиа-файлы
-STATIC_URL = 'static/'
+STATIC_URL = "/static/"
+STATIC_ROOT = BASE_DIR / "staticfiles"
+
+MEDIA_URL = "/media/"
+MEDIA_ROOT = BASE_DIR / "media"
 
 # DRF: базовые настройки API
 REST_FRAMEWORK = {
@@ -150,7 +177,7 @@ SIMPLE_JWT = {
 }
 
 # Настройки для Celery
-REDIS_HOST = os.getenv("REDIS_HOST", "127.0.0.1")
+REDIS_HOST = os.getenv("REDIS_HOST", "redis")
 REDIS_PORT = os.getenv("REDIS_PORT", "6379")
 REDIS_DB = os.getenv("REDIS_DB", "0")
 
